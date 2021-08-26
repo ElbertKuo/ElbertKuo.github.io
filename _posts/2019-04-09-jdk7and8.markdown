@@ -1,0 +1,76 @@
+---
+layout: post
+title: JDK7 和 JDK8 於 Mac同時安裝以及切換
+date: 2019-04-10 01:32:24.000000000 +09:00
+---
+
+#### 有時候開發專案，會因為客戶的需求，會需要再特定版本下開發，但又有些客戶要不一樣的版本，因此為了解決這個困擾，我就開始想辦法解決這個問題。
+
+#### 由於貓貓是使用Mac作為開發機，因此本篇會以Mac環境配置為主
+JDK我們可以透過 [Oracle](https://www.oracle.com/technetwork/java/javase/downloads/index.html) 的官方網站下載且安裝。這個步驟我們就不多做解釋了。
+
+Mac的JDK都是安裝到一個指定的目錄`/Library/Java/JavaVirtualMachines/`：
+```bash
+$ cd /Library/Java/JavaVirtualMachines/
+$ ls
+```
+接著我們可以在這個目錄下查看自己安裝的JDK。
+一般來說，我們應該會看見：
+```bash
+jdk1.7.0_xx.jdk  jdk1.8.0_xx.jdk
+```
+
+#### 環境設定
+
+```bash
+$ vim ~/.bash_profile
+```
+如果沒有 .bash_profile 檔案那麼請使用 vim ~/.bash_profile 指令會創建這個檔案
+
+緊接著進行環境變數設定，輸入以下指令：
+```bash
+$ export JAVA_7_HOME=/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home
+$ export JAVA_8_HOME=/Library/Java/JavaVirtualMachines/jdk1.8.0_172.jdk/Contents/Home
+# 預設為JDK8
+$ JAVA_HOME=$JAVA_8_HOME
+
+$ PATH=$JAVA_HOME/bin:$PATH
+$ CLASSPATH=.:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+$ export JAVA_HOME PATH CLASSPATH
+```
+在Unix shell中，source命令可簡寫為一個點號也被稱為點命令（.），是執行或開啟電腦檔案的命令。
+```bash
+$ source ~/.bash_profile
+```
+
+#### 設定/etc/profile檔案
+在進行這個步驟的時候，可能會有唯讀的狀況出現。可以透過 :wq! 來解決。
+```bash
+$ vim /etc/profile
+$ alias jdk7="export JAVA_HOME=$JAVA_7_HOME"
+$ alias jdk8="export JAVA_HOME=$JAVA_8_HOME"
+```
+
+```bash
+source /etc/profile
+```
+
+
+緊接著即可在終端機輸入jdk7以及jdk8 進行JDK的切換。
+
+```bash
+$ jdk7
+$ java -version
+$ java version "1.7.0_80"
+$ Java(TM) SE Runtime Environment (build 1.7.0_80-b15)
+$ Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)
+```
+```bash
+$ jdk8
+$ java -version
+$ java version "1.8.0_201"
+$ Java(TM) SE Runtime Environment (build 1.8.0_201-b09)
+$ Java HotSpot(TM) 64-Bit Server VM (build 25.201-b09, mixed mode)
+```
+本篇的學習參考資料
+[環境變數JAVA_HOME, CLASSPATH和PATH的作用](https://blog.csdn.net/jiaomicha/article/details/17357199)
